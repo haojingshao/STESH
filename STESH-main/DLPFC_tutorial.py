@@ -3,7 +3,6 @@ import anndata as ad
 import pandas as pd
 import scanpy as sc
 import numpy as np
-# import matplotlib as plt
 import matplotlib.pyplot as plt
 from utils import normalize,load_data
 from img_deal import image_crop, extract_image_feat
