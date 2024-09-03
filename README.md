@@ -51,7 +51,7 @@ python -m ipykernel install --user --name=STESH_env
 
 ### 3. Example
 
-We take **10X sample 151673** as a running example.
+We take **10X sample 151672** as a running example.
 
 - The tutorial can be found in `STESH-main/DLPFC_tutorial.py`.
 - The results can be viewed in the `DLPFC` folder under the `result` folder.
