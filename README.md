@@ -2,7 +2,7 @@
 
 ## Overview
 
-    Identifying spatial domains is the first important step in spatial transcriptomics (ST). Histological information can provide insights beyond gene expression profiles. To make the most of this information, we propose **STESH**, a spatial transcriptomic clustering approach that combines gene expression, spatial information, and histology. STESH uses graph convolutional neural networks to extract histological features and generate expression, histological, spatial, and collaborative convolution modules for multi-view graph convolutional networks with decoders and attention mechanisms. The test results show that STESH outperforms other algorithms in most cases.
+  Identifying spatial domains is the first important step in spatial transcriptomics (ST). Histological information can provide insights beyond gene expression profiles. To make the most of this information, we propose **STESH**, a spatial transcriptomic clustering approach that combines gene expression, spatial information, and histology. STESH uses graph convolutional neural networks to extract histological features and generate expression, histological, spatial, and collaborative convolution modules for multi-view graph convolutional networks with decoders and attention mechanisms. The test results show that STESH outperforms other algorithms in most cases.
 
 ![Frame diagram](https://github.com/haojingshao/STESH/blob/main/STESH.png?raw=true)
 
