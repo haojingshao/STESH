@@ -3,8 +3,9 @@ import anndata as ad
 import pandas as pd
 import scanpy as sc
 import numpy as np
+import scipy.sparse as sp
 import matplotlib.pyplot as plt
-from utils import normalize,load_data
+from utils import normalize,normalize_sparse_matrix,sparse_mx_to_torch_sparse_tensor
 from img_deal import image_crop, extract_image_feat
 from pathlib import Path
 from calculate_adj import calculate_fadj,calculate_madj,calculate_sadj
@@ -91,6 +92,37 @@ def load_DLPFC_ST_file(dataset, highly_genes, k, radius, quality ='hires',image_
     adata.var_names_make_unique() 
     print("saved")
     return adata
+
+def load_data(dataset):
+    print("load data:")
+    path = '../output/'+ dataset +'_pre.h5ad'
+    adata = sc.read_h5ad(path)
+    print(adata)
+    if sp.issparse(adata.X):
+        adata.X = adata.X.tocoo()  # type: ignore 
+        indices = torch.LongTensor([adata.X.row, adata.X.col])
+        values = torch.FloatTensor(adata.X.data)
+        shape = torch.Size(adata.X.shape)
+        features = torch.sparse_coo_tensor(indices, values, shape, dtype=torch.float32)
+    else:
+        features = torch.FloatTensor(adata.X)
+        
+    labels = adata.obs['ground'] 
+    fadj = adata.obsm['fadj']
+    sadj = adata.obsm['sadj']
+    madj = adata.obsm['madj']
+    nfadj = normalize_sparse_matrix(fadj + sp.eye(fadj.shape[0]))
+    nfadj = sparse_mx_to_torch_sparse_tensor(nfadj)
+    nsadj = normalize_sparse_matrix(sadj + sp.eye(sadj.shape[0]))
+    nsadj = sparse_mx_to_torch_sparse_tensor(nsadj)
+    nmadj = normalize_sparse_matrix(madj + sp.eye(madj.shape[0]))
+    nmadj = sparse_mx_to_torch_sparse_tensor(nmadj)
+    graph_nei_sadj = torch.LongTensor(adata.obsm['graph_nei_sadj']) 
+    graph_neg_sadj = torch.LongTensor(adata.obsm['graph_neg_sadj'])
+    graph_nei_madj = torch.LongTensor(adata.obsm['graph_nei_madj']) 
+    graph_neg_madj = torch.LongTensor(adata.obsm['graph_neg_madj']) 
+    print("done")
+    return adata, features, labels, nfadj, nsadj, nmadj , graph_nei_sadj, graph_neg_sadj , graph_nei_madj , graph_neg_madj
 
 if __name__ == "__main__":
     os.environ["CUDA_VISIBLE_DEVICES"] = "1"
