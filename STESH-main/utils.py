@@ -23,38 +23,6 @@ def normalize(adata, highly_genes=3000):
     sc.pp.scale(adata, zero_center=False, max_value=10) 
     return adata
 
-
-def load_data(dataset):
-    print("load data:")
-    path = '../output/'+ dataset +'_pre.h5ad'
-    adata = sc.read_h5ad(path)
-    print(adata)
-    if sp.issparse(adata.X):
-        adata.X = adata.X.tocoo()  # type: ignore 
-        indices = torch.LongTensor([adata.X.row, adata.X.col])
-        values = torch.FloatTensor(adata.X.data)
-        shape = torch.Size(adata.X.shape)
-        features = torch.sparse_coo_tensor(indices, values, shape, dtype=torch.float32)
-    else:
-        features = torch.FloatTensor(adata.X)
-        
-    labels = adata.obs['ground'] 
-    fadj = adata.obsm['fadj']
-    sadj = adata.obsm['sadj']
-    madj = adata.obsm['madj']
-    nfadj = normalize_sparse_matrix(fadj + sp.eye(fadj.shape[0]))
-    nfadj = sparse_mx_to_torch_sparse_tensor(nfadj)
-    nsadj = normalize_sparse_matrix(sadj + sp.eye(sadj.shape[0]))
-    nsadj = sparse_mx_to_torch_sparse_tensor(nsadj)
-    nmadj = normalize_sparse_matrix(madj + sp.eye(madj.shape[0]))
-    nmadj = sparse_mx_to_torch_sparse_tensor(nmadj)
-    graph_nei_sadj = torch.LongTensor(adata.obsm['graph_nei_sadj']) 
-    graph_neg_sadj = torch.LongTensor(adata.obsm['graph_neg_sadj'])
-    graph_nei_madj = torch.LongTensor(adata.obsm['graph_nei_madj']) 
-    graph_neg_madj = torch.LongTensor(adata.obsm['graph_neg_madj']) 
-    print("done")
-    return adata, features, labels, nfadj, nsadj, nmadj , graph_nei_sadj, graph_neg_sadj , graph_nei_madj , graph_neg_madj
-
 def normalize_sparse_matrix(mx):
     rowsum = np.array(mx.sum(1))
     r_inv = np.power(rowsum, -1).flatten()
